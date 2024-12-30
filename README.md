@@ -14,7 +14,7 @@ Zendesk API client library for Go
 ## Installation
 
 ```shell
-$ go get github.com/nukosuke/go-zendesk
+$ go get github.com/circleyu/go-zendesk
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ package main
 import (
     "context"
 
-    "github.com/nukosuke/go-zendesk/zendesk"
+    "github.com/circleyu/go-zendesk/zendesk"
 )
 
 func main() {

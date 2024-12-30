@@ -1,4 +1,4 @@
-module go-zendesk
+module github.com/circleyu/go-zendesk
 
 go 1.23.4
 
