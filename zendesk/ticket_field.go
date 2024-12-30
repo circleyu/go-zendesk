@@ -17,6 +17,10 @@ type TicketFieldSystemFieldOption struct {
 	Value    string `json:"value"`
 }
 
+type TicketFieldCreatorOptions struct {
+	Creator bool `url:"creator,omitempty"`
+}
+
 // TicketField is struct for ticket_field payload
 type TicketField struct {
 	ID                  int64                          `json:"id,omitempty"`
@@ -52,7 +56,7 @@ type TicketField struct {
 type TicketFieldAPI interface {
 	GetTicketFields(ctx context.Context) ([]TicketField, Page, error)
 	CreateTicketField(ctx context.Context, ticketField TicketField) (TicketField, error)
-	GetTicketField(ctx context.Context, ticketID int64) (TicketField, error)
+	GetTicketField(ctx context.Context, ticketID int64, opts *TicketFieldCreatorOptions) (TicketField, error)
 	UpdateTicketField(ctx context.Context, ticketID int64, field TicketField) (TicketField, error)
 	DeleteTicketField(ctx context.Context, ticketID int64) error
 	GetTicketFieldsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[TicketField]
@@ -102,12 +106,22 @@ func (z *Client) CreateTicketField(ctx context.Context, ticketField TicketField)
 
 // GetTicketField gets a specified ticket field
 // ref: https://developer.zendesk.com/rest_api/docs/support/ticket_fields#show-ticket-field
-func (z *Client) GetTicketField(ctx context.Context, ticketID int64) (TicketField, error) {
+func (z *Client) GetTicketField(ctx context.Context, ticketID int64, opts *TicketFieldCreatorOptions) (TicketField, error) {
 	var result struct {
 		TicketField TicketField `json:"ticket_field"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/ticket_fields/%d.json", ticketID))
+	tmp := opts
+	if tmp == nil {
+		tmp = &TicketFieldCreatorOptions{}
+	}
+
+	u, err := addOptions(fmt.Sprintf("/ticket_fields/%d.json", ticketID), tmp)
+	if err != nil {
+		return TicketField{}, err
+	}
+
+	body, err := z.get(ctx, u)
 
 	if err != nil {
 		return TicketField{}, err

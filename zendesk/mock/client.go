@@ -12,7 +12,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	zendesk "go-zendesk/zendesk"
+	zendesk "github.com/circleyu/go-zendesk/zendesk"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -1766,18 +1766,18 @@ func (mr *ClientMockRecorder) GetTicketCommentsOBP(ctx, opts any) *gomock.Call {
 }
 
 // GetTicketField mocks base method.
-func (m *Client) GetTicketField(ctx context.Context, ticketID int64) (zendesk.TicketField, error) {
+func (m *Client) GetTicketField(ctx context.Context, ticketID int64, opts *zendesk.TicketFieldCreatorOptions) (zendesk.TicketField, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTicketField", ctx, ticketID)
+	ret := m.ctrl.Call(m, "GetTicketField", ctx, ticketID, opts)
 	ret0, _ := ret[0].(zendesk.TicketField)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetTicketField indicates an expected call of GetTicketField.
-func (mr *ClientMockRecorder) GetTicketField(ctx, ticketID any) *gomock.Call {
+func (mr *ClientMockRecorder) GetTicketField(ctx, ticketID,opts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTicketField", reflect.TypeOf((*Client)(nil).GetTicketField), ctx, ticketID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTicketField", reflect.TypeOf((*Client)(nil).GetTicketField), ctx, ticketID,opts)
 }
 
 // GetTicketFields mocks base method.

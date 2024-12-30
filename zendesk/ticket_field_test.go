@@ -26,7 +26,7 @@ func TestGetTicketField(t *testing.T) {
 	client := newTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	ticketField, err := client.GetTicketField(ctx, 123)
+	ticketField, err := client.GetTicketField(ctx, 123, nil)
 	if err != nil {
 		t.Fatalf("Failed to get ticket fields: %s", err)
 	}
