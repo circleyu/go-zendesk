@@ -23,6 +23,8 @@ type TicketField struct {
 	URL                 string                         `json:"url,omitempty"`
 	Type                string                         `json:"type"`
 	Title               string                         `json:"title"`
+	CreatorAppName      string                         `json:"creator_app_name,omitempty"`
+	CreatorUserID       int64                          `json:"creator_user_id,omitempty"`
 	RawTitle            string                         `json:"raw_title,omitempty"`
 	Description         string                         `json:"description,omitempty"`
 	RawDescription      string                         `json:"raw_description,omitempty"`
