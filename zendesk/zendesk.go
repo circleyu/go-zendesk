@@ -4,11 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/go-querystring/query"
 )
@@ -18,7 +21,7 @@ const (
 )
 
 var defaultHeaders = map[string]string{
-	"User-Agent":   "nukosuke/go-zendesk/0.18.0",
+	"User-Agent":   "circleyu/go-zendesk",
 	"Content-Type": "application/json",
 }
 
@@ -38,7 +41,7 @@ type (
 		Get(ctx context.Context, path string) ([]byte, error)
 		Post(ctx context.Context, path string, data interface{}) ([]byte, error)
 		Put(ctx context.Context, path string, data interface{}) ([]byte, error)
-		Delete(ctx context.Context, path string) error
+		Delete(ctx context.Context, path string) ([]byte, error)
 	}
 
 	// CursorPagination contains options for using cursor pagination.
@@ -135,7 +138,7 @@ func (z *Client) get(ctx context.Context, path string) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -169,12 +172,63 @@ func (z *Client) post(ctx context.Context, path string, data interface{}) ([]byt
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
 	if !(resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated) {
+		return nil, Error{
+			body: body,
+			resp: resp,
+		}
+	}
+
+	return body, nil
+}
+
+// post send data to API and returns response body as []bytes
+func (z *Client) postWithStatus(ctx context.Context, path string, data interface{}, status int) ([]byte, error) {
+	bytes, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, z.baseURL.String()+path, strings.NewReader(string(bytes)))
+	if err != nil {
+		return nil, err
+	}
+
+	req = z.prepareRequest(ctx, req)
+
+	resp, err := z.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	for resp.StatusCode == http.StatusTooManyRequests {
+		retryValue := resp.Header.Get("Retry-After")
+		retryTime, e := strconv.Atoi(retryValue)
+		if e != nil {
+			return nil, err
+		}
+		log.Printf("Wait %d Second....", retryTime)
+		time.Sleep(time.Duration(retryTime) * time.Second)
+
+		resp, err = z.httpClient.Do(req)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != status {
 		return nil, Error{
 			body: body,
 			resp: resp,
@@ -204,7 +258,7 @@ func (z *Client) put(ctx context.Context, path string, data interface{}) ([]byte
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +294,7 @@ func (z *Client) patch(ctx context.Context, path string, data interface{}) ([]by
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -257,33 +311,53 @@ func (z *Client) patch(ctx context.Context, path string, data interface{}) ([]by
 }
 
 // delete sends data to API and returns an error if unsuccessful
-func (z *Client) delete(ctx context.Context, path string) error {
+func (z *Client) delete(ctx context.Context, path string) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodDelete, z.baseURL.String()+path, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	req = z.prepareRequest(ctx, req)
 
 	resp, err := z.httpClient.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+
+	for resp.StatusCode == http.StatusTooManyRequests {
+		retryValue := resp.Header.Get("Retry-After")
+		retryTime, e := strconv.Atoi(retryValue)
+		if e != nil {
+			log.Fatal(e.Error())
+		}
+		log.Printf("Wait %d Second....", retryTime)
+		time.Sleep(time.Duration(retryTime) * time.Second)
+
+		resp, err = z.httpClient.Do(req)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return nil, err
+	}
+
+	if resp.StatusCode == http.StatusOK {
+		return body, nil
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return Error{
+		return nil, Error{
 			body: body,
 			resp: resp,
 		}
 	}
 
-	return nil
+	return body, nil
 }
 
 // prepare request sets common request variables such as authn and user agent
@@ -362,6 +436,6 @@ func (z *Client) Put(ctx context.Context, path string, data interface{}) ([]byte
 }
 
 // Delete allows users to send requests not yet implemented
-func (z *Client) Delete(ctx context.Context, path string) error {
+func (z *Client) Delete(ctx context.Context, path string) ([]byte, error) {
 	return z.delete(ctx, path)
 }

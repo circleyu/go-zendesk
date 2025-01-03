@@ -156,7 +156,7 @@ func (wr *writer) Close() (Upload, error) {
 // AttachmentAPI an interface containing all of the attachment related zendesk methods
 type AttachmentAPI interface {
 	UploadAttachment(ctx context.Context, filename string, token string) UploadWriter
-	DeleteUpload(ctx context.Context, token string) error
+	DeleteUpload(ctx context.Context, token string) ([]byte, error)
 	GetAttachment(ctx context.Context, id int64) (Attachment, error)
 }
 
@@ -173,7 +173,7 @@ func (z *Client) UploadAttachment(ctx context.Context, filename string, token st
 
 // DeleteUpload deletes a previously uploaded file
 // ref: https://developer.zendesk.com/rest_api/docs/support/attachments#delete-upload
-func (z *Client) DeleteUpload(ctx context.Context, token string) error {
+func (z *Client) DeleteUpload(ctx context.Context, token string) ([]byte, error) {
 	return z.delete(ctx, fmt.Sprintf("/uploads/%s.json", token))
 }
 

@@ -81,7 +81,7 @@ func TestDeleteUpload(t *testing.T) {
 	}))
 
 	c := newTestClient(mockAPI)
-	err := c.DeleteUpload(ctx, "foobar")
+	_, err := c.DeleteUpload(ctx, "foobar")
 	if err != nil {
 		t.Fatalf("Failed to delete ticket field: %s", err)
 	}
@@ -97,7 +97,7 @@ func TestDeleteUploadCanceledContext(t *testing.T) {
 	canceled, cancelFunc := context.WithCancel(ctx)
 	cancelFunc()
 
-	err := c.DeleteUpload(canceled, "foobar")
+	_, err := c.DeleteUpload(canceled, "foobar")
 	if err == nil {
 		t.Fatal("did not get expected error")
 	}

@@ -109,7 +109,7 @@ func (z *Client) UpdateWebhook(ctx context.Context, webhookID string, hook *Webh
 //
 // https://developer.zendesk.com/api-reference/event-connectors/webhooks/webhooks/#delete-webhook
 func (z *Client) DeleteWebhook(ctx context.Context, webhookID string) error {
-	err := z.delete(ctx, fmt.Sprintf("/webhooks/%s", webhookID))
+	_, err := z.delete(ctx, fmt.Sprintf("/webhooks/%s", webhookID))
 	if err != nil {
 		return err
 	}

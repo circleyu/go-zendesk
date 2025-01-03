@@ -74,6 +74,13 @@ type Ticket struct {
 	Tags            []string      `json:"tags,omitempty"`
 	CustomFields    []CustomField `json:"custom_fields,omitempty"`
 
+	EmailCCs []struct {
+		ID     int64  `json:"user_id,omitempty"`
+		Email  string `json:"user_email,omitempty"`
+		Name   string `json:"user_name,omitempty"`
+		Action string `json:"action,omitempty"`
+	} `json:"email_ccs,omitempty"`
+
 	Via *Via `json:"via,omitempty"`
 
 	SatisfactionRating *struct {
@@ -328,7 +335,7 @@ func (z *Client) UpdateTicket(ctx context.Context, ticketID int64, ticket Ticket
 // DeleteTicket deletes the specified ticket
 // ref: https://developer.zendesk.com/rest_api/docs/support/tickets#delete-ticket
 func (z *Client) DeleteTicket(ctx context.Context, ticketID int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/tickets/%d.json", ticketID))
+	_, err := z.delete(ctx, fmt.Sprintf("/tickets/%d.json", ticketID))
 
 	if err != nil {
 		return err

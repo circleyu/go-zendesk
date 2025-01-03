@@ -5,6 +5,7 @@
 //
 //	mockgen -source=api.go -destination=mock/client.go -package=mock -mock_names=API=Client go-zendesk/zendesk API
 //
+
 // Package mock is a generated GoMock package.
 package mock
 
@@ -20,6 +21,7 @@ import (
 type Client struct {
 	ctrl     *gomock.Controller
 	recorder *ClientMockRecorder
+	isgomock struct{}
 }
 
 // ClientMockRecorder is the mock recorder for Client.
@@ -98,6 +100,66 @@ func (m *Client) AutocompleteSearchCustomObjectRecords(ctx context.Context, cust
 func (mr *ClientMockRecorder) AutocompleteSearchCustomObjectRecords(ctx, customObjectKey, opts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AutocompleteSearchCustomObjectRecords", reflect.TypeOf((*Client)(nil).AutocompleteSearchCustomObjectRecords), ctx, customObjectKey, opts)
+}
+
+// BatchCreateManyOrganizations mocks base method.
+func (m *Client) BatchCreateManyOrganizations(ctx context.Context, orgs []zendesk.Organization) (zendesk.JobStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BatchCreateManyOrganizations", ctx, orgs)
+	ret0, _ := ret[0].(zendesk.JobStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BatchCreateManyOrganizations indicates an expected call of BatchCreateManyOrganizations.
+func (mr *ClientMockRecorder) BatchCreateManyOrganizations(ctx, orgs any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchCreateManyOrganizations", reflect.TypeOf((*Client)(nil).BatchCreateManyOrganizations), ctx, orgs)
+}
+
+// BatchDeleteManyOrganizations mocks base method.
+func (m *Client) BatchDeleteManyOrganizations(ctx context.Context, orgIDs []string) (zendesk.JobStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BatchDeleteManyOrganizations", ctx, orgIDs)
+	ret0, _ := ret[0].(zendesk.JobStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BatchDeleteManyOrganizations indicates an expected call of BatchDeleteManyOrganizations.
+func (mr *ClientMockRecorder) BatchDeleteManyOrganizations(ctx, orgIDs any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchDeleteManyOrganizations", reflect.TypeOf((*Client)(nil).BatchDeleteManyOrganizations), ctx, orgIDs)
+}
+
+// BatchImportTickets mocks base method.
+func (m *Client) BatchImportTickets(ctx context.Context, tickets []zendesk.TicketImport, opts *zendesk.TicketImportOptions) (zendesk.JobStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BatchImportTickets", ctx, tickets, opts)
+	ret0, _ := ret[0].(zendesk.JobStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BatchImportTickets indicates an expected call of BatchImportTickets.
+func (mr *ClientMockRecorder) BatchImportTickets(ctx, tickets, opts any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchImportTickets", reflect.TypeOf((*Client)(nil).BatchImportTickets), ctx, tickets, opts)
+}
+
+// BatchUpdateManyOrganizations mocks base method.
+func (m *Client) BatchUpdateManyOrganizations(ctx context.Context, orgs []zendesk.Organization) (zendesk.JobStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BatchUpdateManyOrganizations", ctx, orgs)
+	ret0, _ := ret[0].(zendesk.JobStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BatchUpdateManyOrganizations indicates an expected call of BatchUpdateManyOrganizations.
+func (mr *ClientMockRecorder) BatchUpdateManyOrganizations(ctx, orgs any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BatchUpdateManyOrganizations", reflect.TypeOf((*Client)(nil).BatchUpdateManyOrganizations), ctx, orgs)
 }
 
 // CreateAutomation mocks base method.
@@ -401,11 +463,12 @@ func (mr *ClientMockRecorder) CreateWebhook(ctx, hook any) *gomock.Call {
 }
 
 // Delete mocks base method.
-func (m *Client) Delete(ctx context.Context, path string) error {
+func (m *Client) Delete(ctx context.Context, path string) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", ctx, path)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete.
@@ -583,11 +646,12 @@ func (mr *ClientMockRecorder) DeleteTrigger(ctx, id any) *gomock.Call {
 }
 
 // DeleteUpload mocks base method.
-func (m *Client) DeleteUpload(ctx context.Context, token string) error {
+func (m *Client) DeleteUpload(ctx context.Context, token string) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteUpload", ctx, token)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // DeleteUpload indicates an expected call of DeleteUpload.
@@ -749,18 +813,18 @@ func (mr *ClientMockRecorder) GetBrand(ctx, brandID any) *gomock.Call {
 }
 
 // GetCountTicketsInViews mocks base method.
-func (m *Client) GetCountTicketsInViews(arg0 context.Context, arg1 []string) ([]zendesk.ViewCount, error) {
+func (m *Client) GetCountTicketsInViews(ctx context.Context, ids []string) ([]zendesk.ViewCount, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCountTicketsInViews", arg0, arg1)
+	ret := m.ctrl.Call(m, "GetCountTicketsInViews", ctx, ids)
 	ret0, _ := ret[0].([]zendesk.ViewCount)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetCountTicketsInViews indicates an expected call of GetCountTicketsInViews.
-func (mr *ClientMockRecorder) GetCountTicketsInViews(arg0, arg1 interface{}) *gomock.Call {
+func (mr *ClientMockRecorder) GetCountTicketsInViews(ctx, ids any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCountTicketsInViews", reflect.TypeOf((*Client)(nil).GetCountTicketsInViews), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCountTicketsInViews", reflect.TypeOf((*Client)(nil).GetCountTicketsInViews), ctx, ids)
 }
 
 // GetCustomRoles mocks base method.
@@ -1775,9 +1839,9 @@ func (m *Client) GetTicketField(ctx context.Context, ticketID int64, opts *zende
 }
 
 // GetTicketField indicates an expected call of GetTicketField.
-func (mr *ClientMockRecorder) GetTicketField(ctx, ticketID,opts any) *gomock.Call {
+func (mr *ClientMockRecorder) GetTicketField(ctx, ticketID, opts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTicketField", reflect.TypeOf((*Client)(nil).GetTicketField), ctx, ticketID,opts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTicketField", reflect.TypeOf((*Client)(nil).GetTicketField), ctx, ticketID, opts)
 }
 
 // GetTicketFields mocks base method.
@@ -2411,6 +2475,21 @@ func (mr *ClientMockRecorder) GetWebhookSigningSecret(ctx, webhookID any) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetWebhookSigningSecret", reflect.TypeOf((*Client)(nil).GetWebhookSigningSecret), ctx, webhookID)
 }
 
+// ImportTicket mocks base method.
+func (m *Client) ImportTicket(ctx context.Context, ticket zendesk.TicketImport, opts *zendesk.TicketImportOptions) (zendesk.Ticket, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ImportTicket", ctx, ticket, opts)
+	ret0, _ := ret[0].(zendesk.Ticket)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ImportTicket indicates an expected call of ImportTicket.
+func (mr *ClientMockRecorder) ImportTicket(ctx, ticket, opts any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ImportTicket", reflect.TypeOf((*Client)(nil).ImportTicket), ctx, ticket, opts)
+}
+
 // ListCustomObjectRecords mocks base method.
 func (m *Client) ListCustomObjectRecords(ctx context.Context, customObjectKey string, opts *zendesk.CustomObjectListOptions) ([]zendesk.CustomObjectRecord, zendesk.Page, error) {
 	m.ctrl.T.Helper()
@@ -2440,6 +2519,21 @@ func (m *Client) ListInstallations(ctx context.Context) ([]zendesk.AppInstallati
 func (mr *ClientMockRecorder) ListInstallations(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListInstallations", reflect.TypeOf((*Client)(nil).ListInstallations), ctx)
+}
+
+// ListJobStatuses mocks base method.
+func (m *Client) ListJobStatuses(ctx context.Context) (zendesk.JobStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListJobStatuses", ctx)
+	ret0, _ := ret[0].(zendesk.JobStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListJobStatuses indicates an expected call of ListJobStatuses.
+func (mr *ClientMockRecorder) ListJobStatuses(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListJobStatuses", reflect.TypeOf((*Client)(nil).ListJobStatuses), ctx)
 }
 
 // ListTicketComments mocks base method.
@@ -2592,6 +2686,36 @@ func (m *Client) ShowCustomObjectRecord(ctx context.Context, customObjectKey, cu
 func (mr *ClientMockRecorder) ShowCustomObjectRecord(ctx, customObjectKey, customObjectRecordID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ShowCustomObjectRecord", reflect.TypeOf((*Client)(nil).ShowCustomObjectRecord), ctx, customObjectKey, customObjectRecordID)
+}
+
+// ShowJobStatuses mocks base method.
+func (m *Client) ShowJobStatuses(ctx context.Context, id string) (zendesk.JobStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ShowJobStatuses", ctx, id)
+	ret0, _ := ret[0].(zendesk.JobStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ShowJobStatuses indicates an expected call of ShowJobStatuses.
+func (mr *ClientMockRecorder) ShowJobStatuses(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ShowJobStatuses", reflect.TypeOf((*Client)(nil).ShowJobStatuses), ctx, id)
+}
+
+// ShowManyJobStatuses mocks base method.
+func (m *Client) ShowManyJobStatuses(ctx context.Context, ids []string) (zendesk.JobStatus, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ShowManyJobStatuses", ctx, ids)
+	ret0, _ := ret[0].(zendesk.JobStatus)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ShowManyJobStatuses indicates an expected call of ShowManyJobStatuses.
+func (mr *ClientMockRecorder) ShowManyJobStatuses(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ShowManyJobStatuses", reflect.TypeOf((*Client)(nil).ShowManyJobStatuses), ctx, ids)
 }
 
 // UpdateAutomation mocks base method.

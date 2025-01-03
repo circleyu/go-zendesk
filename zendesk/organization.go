@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
 	"time"
 )
 
@@ -44,6 +46,10 @@ type OrganizationAPI interface {
 	GetOrganizationsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[Organization]
 	GetOrganizationsOBP(ctx context.Context, opts *OBPOptions) ([]Organization, Page, error)
 	GetOrganizationsCBP(ctx context.Context, opts *CBPOptions) ([]Organization, CursorPaginationMeta, error)
+
+	BatchCreateManyOrganizations(ctx context.Context, orgs []Organization) (JobStatus, error)
+	BatchUpdateManyOrganizations(ctx context.Context, orgs []Organization) (JobStatus, error)
+	BatchDeleteManyOrganizations(ctx context.Context, orgIDs []string) (JobStatus, error)
 }
 
 // GetOrganizations fetch organization list
@@ -165,10 +171,83 @@ func (z *Client) UpdateOrganization(ctx context.Context, orgID int64, org Organi
 // DeleteOrganization deletes the specified organization
 // ref: https://developer.zendesk.com/rest_api/docs/support/organizations#delete-organization
 func (z *Client) DeleteOrganization(ctx context.Context, orgID int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/organizations/%d.json", orgID))
+	_, err := z.delete(ctx, fmt.Sprintf("/organizations/%d.json", orgID))
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// BatchCreateManyOrganizations create a new many organization
+//
+// ref: https://developer.zendesk.com/api-reference/ticketing/users/users/#create-many-users
+func (z *Client) BatchCreateManyOrganizations(ctx context.Context, orgs []Organization) (JobStatus, error) {
+	var data struct {
+		Organizations []Organization `json:"organizations"`
+	}
+	data.Organizations = orgs
+
+	var result struct {
+		JobStatus JobStatus `json:"job_status"`
+	}
+
+	body, err := z.postWithStatus(ctx, "/organizations/create_many.json", data, http.StatusOK)
+	if err != nil {
+		return JobStatus{}, err
+	}
+
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		return JobStatus{}, err
+	}
+
+	return result.JobStatus, nil
+}
+
+// BatchUpdateManyOrganizations create a new many organization
+//
+// ref: https://developer.zendesk.com/api-reference/ticketing/organizations/organizations/#update-many-organizations
+func (z *Client) BatchUpdateManyOrganizations(ctx context.Context, orgs []Organization) (JobStatus, error) {
+	var data struct {
+		Organizations []Organization `json:"organizations"`
+	}
+	data.Organizations = orgs
+
+	var result struct {
+		JobStatus JobStatus `json:"job_status"`
+	}
+
+	body, err := z.put(ctx, "/organizations/update_many.json", data)
+	if err != nil {
+		return JobStatus{}, err
+	}
+
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		return JobStatus{}, err
+	}
+
+	return result.JobStatus, nil
+}
+
+// BatchDeleteManyOrganizations delete many organizations
+//
+// ref: https://developer.zendesk.com/api-reference/ticketing/organizations/organizations/#bulk-delete-organizations
+func (z *Client) BatchDeleteManyOrganizations(ctx context.Context, orgIDs []string) (JobStatus, error) {
+	var result struct {
+		JobStatus JobStatus `json:"job_status"`
+	}
+
+	body, err := z.delete(ctx, fmt.Sprintf("/organizations/destroy_many.json?ids=%s", strings.Join(orgIDs, ",")))
+	if err != nil {
+		return JobStatus{}, err
+	}
+
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		return JobStatus{}, err
+	}
+
+	return result.JobStatus, nil
 }

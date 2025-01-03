@@ -34,6 +34,8 @@ type API interface {
 	ViewAPI
 	WebhookAPI
 	CustomObjectAPI
+	JobAPI
+	TicketImportAPI
 }
 
 var _ API = (*Client)(nil)
