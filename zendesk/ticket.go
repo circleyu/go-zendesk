@@ -118,6 +118,15 @@ type Ticket struct {
 	// TODO: TicketAudit (POST only) #126
 }
 
+func (t Ticket) GetCustomFieldValue(fieldId int64) interface{} {
+	for _, field := range t.CustomFields {
+		if field.ID == fieldId {
+			return field.Value
+		}
+	}
+	return nil
+}
+
 // Requester is the struct that can be passed to create a new requester on ticket creation
 // https://develop.zendesk.com/hc/en-us/articles/360059146153#creating-a-ticket-with-a-new-requester
 type Requester struct {
